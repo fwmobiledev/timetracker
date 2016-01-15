@@ -1,0 +1,75 @@
+<div>
+    <div class="close-btn-right-popup glyphicon glyphicon-remove" ng-click="closePopup()"></div>
+    <div class="popup-title">Time Tracker</div>
+
+        <div class="input-group description" ng-class="{'has-error' : addManualTimesheetForm.description.$error.required && addManualTimesheetFormSubmit}">
+            <p class="title">Description</p>
+            <div class="input-field clearfix">
+                <span class="glyphicon glyphicon-pencil"></span>
+                <input type="text" ng-model="timesheet.desc" required name="description"/>
+                <p ng-show="addManualTimesheetForm.description.$error.required && addManualTimesheetFormSubmit"
+                   class="help-block" >Description is required</p>
+            </div>
+        </div>
+
+        <div class="input-group project" ng-class="{'has-error' : addManualTimesheetForm.project.$error.required && addManualTimesheetFormSubmit}">
+            <p class="title">Project</p>
+            <div class="input-field clearfix">
+                <span class="glyphicon glyphicon-folder-open"></span>
+                <select  ng-model="timesheet.project" ng-options="p.name for p in fwToggle.projectArr track by p.id" class="form-control" required  name="project" ng-change="populate_estimate(timesheet.project)"><option value="">Select</option></select>
+                <span class="drop-down glyphicon glyphicon-triangle-bottom"></span>
+                <p ng-show="addManualTimesheetForm.project.$error.required && addManualTimesheetFormSubmit"
+                   class="help-block" >Project is required</p>
+            </div>
+        </div>
+
+        <div class="input-group estimate">
+                <p class="title">Estimate</p>
+                <div class="input-field clearfix" ng-if="fwToggle.estimates.length">
+                    <span class="fa fa-area-chart"></span>
+                    <select  ng-model="timesheet.estimates" ng-options="es.desc for es in fwToggle.estimates track by es.id" class="form-control" name="estimate"><option value="">Select Estimate</option></select>
+                    <span class="drop-down glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+            <h4 ng-if="!fwToggle.estimates.length">No Estimates for this Project</h4>
+        </div>
+
+        <div  class="input-group tag"  ng-class="{'has-error' : addManualTimesheetForm.tag.$error.required && addManualTimesheetFormSubmit}">
+            <div class="input-field clearfix">
+                <span class="glyphicon glyphicon-tag"></span>
+        <oi-select
+                oi-options="tag as tag.label for tag in fwToggle.tagArr track by tag.id"
+                ng-model="timesheet.tagArr"
+                multiple
+                placeholder="Select"
+                required
+                name="tag"
+                ></oi-select>
+                <span class="drop-down glyphicon glyphicon-triangle-bottom"></span>
+            <p ng-show="addManualTimesheetForm.tag.$error.required && addManualTimesheetFormSubmit"
+               class="help-block" >Tag is required</p>
+         </div>
+        </div>
+
+        <div class="input-group time" ng-class="{'has-error' : addManualTimesheetForm.total_time.$error.required && addManualTimesheetFormSubmit}" ng-if="showManualForm">
+            <p class="title">Time</p>
+            <div class="input-field clearfix">
+                <span class="glyphicon glyphicon-time"></span>
+                <input ng-model="timesheet.total_time" required name="total_time"/>
+                <!--<input type="number" name="points" min="0" max="10" step="1" value="0">-->
+                <span class="last-child drop-down glyphicon glyphicon-triangle-top"><span class="last glyphicon glyphicon-triangle-bottom"></span></span>
+                <p ng-show="addManualTimesheetForm.total_time.$error.required && addManualTimesheetFormSubmit"
+                   class="help-block" >Total Time is required</p>
+            </div>
+        </div>
+
+        <div class="buttons"  ng-show="showManualForm">
+            <button class="delete-btn" ng-show="timesheet.uuid" ng-click="delete_entry(timesheet.uuid)"><span class="glyphicon glyphicon-trash"></span>Delete the entry</button>
+            <button class="save-btn" ng-click="saveManualEntry(addManualTimesheetForm)"><span class="glyphicon glyphicon-file"></span>Save</button>
+        </div>
+
+        <div class="buttons" ng-show="showForm">
+            <button class="delete-btn" ng-click="clearFields('delete')"><span class="glyphicon glyphicon-trash"></span>Delete</button>
+            <button class="save-btn" ng-click="saveTimesheetData(timesheet)"><span class="glyphicon glyphicon-file"></span>Save</button>
+        </div>
+
+</div>

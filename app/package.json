@@ -1,0 +1,15 @@
+{
+  "name": "fwtoggle",
+  "version": "1.0.0",
+  "description": "App to track timesheet",
+   "productName": "FW Toggle",
+  "main": "main.js",
+  "devDependencies": {
+    "fs-extra": "^0.26.4",
+    "humanize-duration": "^3.3.0",
+    "lokijs": "^1.3.10",
+    "moment": "^2.10.6",
+    "node-uuid": "^1.4.7",
+    "userhome": "^1.0.0"
+  }
+}

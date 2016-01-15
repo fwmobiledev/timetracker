@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Encoding=UTF-8
+Name={{productName}}
+Comment={{description}}
+Exec={{userhome}}/{{name}}/{{name}}
+Path={{userhome}}/{{name}}/
+Icon={{userhome}}/{{name}}/icon.png
+Terminal=false
+Categories=Application;

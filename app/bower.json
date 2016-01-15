@@ -1,0 +1,18 @@
+{
+  "name": "timesheet_tracker",
+  "description": "App to track timesheet",
+  "main": "src/app.js",
+  "authors": [
+    "FW"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "timesheet"
+  ],
+  "homepage": "https://github.com/Focalworks/TimesheetTtracker",
+  "moduleType": [],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "jquery": "jQuery#1.9.1",
+  }
+}

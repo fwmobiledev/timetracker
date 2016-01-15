@@ -1,0 +1,112 @@
+<div>
+    <div class="btn" ng-click="openManualEntry()">Add manual Entry</div>
+
+    <form name="addManualTimesheetForm" novalidate>
+
+    <div ng-controller="timesheetManualCtrl" class="time-tracker-popup-right" ng-class="{'slide-from-right': showManualForm || showForm}">
+        <div ng-include src="'./main/views/timesheet_add_manual_form.html'" ></div>
+
+    </div>
+
+    <!--<form name="addTimesheetForm" novalidate>-->
+
+        <div class="description row">
+
+                <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
+                   <button ng-click="openCreateNew()" class="col-xs-6 col-sm-6 col-lg-6 col-md-6 btn" ng-show="!newToggleEntry.desc.length">Add Details</button>
+                    <button ng-click="openCreateNew()" class="col-xs-6 col-sm-6 col-lg-6 col-md-6 btn" ng-show="newToggleEntry.desc.length">{{newToggleEntry.desc}}</button>
+
+                    <div class="col-xs-5 col-sm-5 col-lg-5 col-md-5 ">
+                        <div class="pull-right">
+                           <timer interval="1000" auto-start="false" ><span ng-show="hours">{{hours}} hour{{hoursS}}, </span> <span ng-show="minutes">{{minutes}} min{{minutesS}}, </span>{{seconds}} sec{{secondsS}}.</timer>
+
+                            <button ng-click="startTimer()" ng-disabled="timerRunning" class="btn btn-success" ng-show="!timerRunning">Start Timer</button>
+                            <button ng-click="stopTimer(addManualTimesheetForm)" ng-disabled="!timerRunning"  class="btn btn-success" ng-show="timerRunning">Stop Timer</button>
+
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </form>
+
+
+    <!-- <div  class="time-tracker-popup-right" ng-class="{'slide-from-right': showForm}">
+         <div class="form-group" ng-class="{'has-error' : addTimesheetForm.description.$error.required && addTimesheetFormSubmit}">
+             <input type="text" ng-model="newToggleEntry.desc" placeholder="Enter the Description" class="form-control" required name="description"/>
+             <p ng-show="addTimesheetForm.description.$error.required && addTimesheetFormSubmit"
+                class="help-block" >Description is required</p>
+         </div>
+
+         <div class="form-group" ng-class="{'has-error' : addTimesheetForm.project.$error.required && addTimesheetFormSubmit}">
+             <select  ng-model="newToggleEntry.project" ng-options="p.name for p in fwToggle.projectArr track by p.id" class="form-control" required  name="project" ng-change="populate_estimate(newToggleEntry.project)"><option value="">Select Project</option></select>
+             <p ng-show="addTimesheetForm.project.$error.required && addTimesheetFormSubmit"
+                class="help-block" >Project is required</p>
+         </div>
+
+         <div  class="form-group">
+            <select  ng-model="newToggleEntry.estimates" ng-options="es.desc for es in fwToggle.estimates track by es.id" class="form-control" name="estimate" ng-if="fwToggle.estimates.length"><option value="">Select Estimate</option></select>
+             <h4 ng-if="!fwToggle.estimates.length">No Estimates for this Project</h4>
+         </div>
+
+         <div  class="form-group" ng-class="{'has-error' : addTimesheetForm.tag.$error.required && addTimesheetFormSubmit}">
+             <div ng-repeat="tag in fwToggle.tagArr">
+                 <div class="checkbox check-info">
+                     <input id="tag-{{$index}}" type="checkbox" ng-model="newToggleEntry.tagArr[tag.id]" class="form-control" name="tag"/>
+                     <label for="tag-{{$index}}">{{tag.name}}</label>
+                 </div>
+             </div>
+             <p ng-show="addTimesheetForm.tag.$error.required && addTimesheetFormSubmit"
+                class="help-block" >Tag is required</p>
+         </div>
+
+        &lt;!&ndash; <div  class="form-group">
+                <label>Start Time</label><input ng-model="newToggleEntry.start_time_format"/>
+            </div>
+
+            <div  class="form-group">
+                <label>End Time</label><input ng-model="newToggleEntry.end_time_format"/>
+            </div>&ndash;&gt;
+
+            <button ng-click="showForm = false" class="btn btn-success">Done</button>
+            <button ng-click="clearFields('delete')" class="btn btn-success">Delete</button>
+
+        </div>
+-->
+    <!-- <h3>Timer 1: <timer/></h3>
+     <h3>Timer 2: <timer interval="2000"/></h3>
+     <h3>Timer 3: <timer>{{minutes}} minutes, {{seconds}} seconds.</timer></h3>
+     <button ng-click="startTimer()" ng-disabled="timerRunning">Start Timers</button>
+     <button ng-click="stopTimer()" ng-disabled="!timerRunning">Stop Timers</button>-->
+
+
+
+    <!--</form>-->
+
+    <div class="row">
+        <div  ng-repeat="value in sortedTimeEntries track by $index"  class="view-row">
+            <div class="total-time clearfix"><span  class="date">{{value.date}}</span>
+                <span class="time">{{value.totalDuration}}</span>
+            </div>
+            <!--<table class="table">
+                <tr ng-repeat="timeEntry in value.data track by $index">
+                    <td class="col-md-3">{{timeEntry.desc}}</td>
+                    <td class="col-md-3">{{timeEntry.project}}</td>
+                    <td class="col-md-3">{{timeEntry.total_time}}</td>
+                    <td class="col-md-2" ng-click="continue_entry(timeEntry.uuid, addTimesheetForm)"><i class="glyphicon glyphicon-play"></i></td>
+                    <td class="col-md-2" ng-click="delete_entry(timeEntry.uuid)"><i class="glyphicon glyphicon-remove"></i></td>
+                </tr>
+            </table>-->
+
+            <div class="time-entries clearfix" ng-repeat="timeEntry in value.data track by $index"  ng-click="openEditTimeEntryPopup(timeEntry.uuid)">
+                <div class="description">{{timeEntry.desc}}</div>
+                <div class="project-estimate">
+                    <span class="project">{{timeEntry.project}}</span><span class="estimate">{{timeEntry.total_time}}</span>
+                </div>
+                <div class="hours">{{timeEntry.total_time}}</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>FW TOGGLE</title>
+
+
+    <link href="./bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./bower_components/oi.select/dist/select.min.css" rel="stylesheet">
+
+    <!--<link href="./css/style.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <script src="./bower_components/jquery/jquery.min.js"></script>
+    <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <link href="./node_modules/lokijs/src/lokijs.js" rel="stylesheet">
+
+    <script>var moment = require("moment");
+    var humanizeDuration = require("humanize-duration");
+    var baseUrl = "http://192.168.7.89/RND/timesheet/public/";
+        var GRANT_TYPE="desktop_app";
+        var CLIENT_ID="web";
+    </script>
+
+
+    <!-- build:js scripts/vendor.js -->
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../bower_components/angular-timer/dist/angular-timer.js"></script>
+    <script src="../bower_components/angular-cookies/angular-cookies.min.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <!-- endbuild -->
+
+    <script src="./bower_components/oi.select/dist/select-tpls.min.js"></script>
+
+</head>
+<body ng-app="MainWindow">
+<div ng-controller="MainCtrl">
+        <!--<div ng-show="user.loggedInUser">
+            <div ng-include src="'./main/views/navigation.html'" ></div>
+        </div>-->
+
+    <div class="col-sm-12 container-wrapper clearfix">
+        <div class="col-sm-12 col-sm-8 container-inner clearfix">
+            <div ng-show="user.loggedInUser">
+                    <div ng-include src="'./main/views/navigation.html'" ></div>
+            </div>
+
+           <div class="container">
+                <ng-view></ng-view>
+           </div>
+        </div>
+    </div>
+</div>
+
+    <!-- build:app main/angular-app.js -->
+    <script src="./main/angular-app.js"></script>
+    <script src="./main/model/offline_service.js"></script>
+    <script src="./main/model/userModel.js"></script>
+    <script src="./main/model/service.js"></script>
+    <script src="./main/controller/MainController.js"></script>
+    <script src="./main/controller/UserController.js"></script>
+    <script src="./main/controller/TimesheetController.js"></script>
+    <script src="./main/controller/timesheetManualCtrl.js"></script>
+    <!-- endbuild -->
+
+</body>
+</html>

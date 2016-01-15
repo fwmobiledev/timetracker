@@ -1,0 +1,35 @@
+<div ng-controller="userCtrl" class="login-block clearfix">
+
+    <div class="alert alert-danger" ng-show="error">{{errorMsg}}</div>
+    <div>
+        <div class="login-logo clearfix">
+            <img src="img/logo_2.png"/>
+        </div>
+        <div class="col-sm-5 col-sm-push-4">
+            <div class="panel panel-primary panel-login animated" ng-class="{shake: loginStatus}">
+                <div class="panel-body">
+                    <form ng-submit="doLogin(loginForm)" name="loginForm" novalidate>
+
+                        <div class="form-group" ng-class="{'has-error':loginForm.email.$invalid && loginFormSubmit}">
+                            <input type="email" name="email"
+                                   placeholder="Enter your email address" ng-model="userLogin.email"
+                                   class="user-name clearfix" required/>
+                            <p ng-show="loginForm.email.$error.required && loginFormSubmit" class="help-block">Please enter email</p>
+                            <p ng-show="loginForm.email.$error.email && loginFormSubmit" class="help-block">Please enter valid email</p>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error':loginForm.password.$invalid && loginFormSubmit}">
+                            <input type="password" name="password"
+                                   placeholder="Enter your password" ng-model="userLogin.password"
+                                   class="password clearfix" required/>
+                            <p ng-show="loginForm.password.$invalid && loginFormSubmit" class="help-block">Please enter password</p>
+                        </div>
+
+                        <button class="login-btn clearfix">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
