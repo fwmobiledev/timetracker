@@ -14,11 +14,6 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
     /* Helper Function to sync data to online */
     $scope.syncData = function(TimesheetData) {
         timesheet.syncTimesheets(TimesheetData).success(function (response) {
-            /* console.log("RESOONSE", response);
-             angular.forEach(response, function (data, key) {
-             OfflineStorage.updateTimesheetStatus(data.uuid);
-             });*/
-
             OfflineStorage.truncateDb('timesheet');
             $scope.timeEntries = [];
             angular.forEach(response, function (timeEntry, key) {
@@ -117,45 +112,54 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
     $scope.newToggleEntry.end_time_format = getFormattedTime(currentDate);
     $scope.timerRunning = false;
 
+    $scope.resetToggleEntryVar = function() {
+        delete $scope.newToggleEntry.uuid;
+        delete $scope.newToggleEntry.project;
+        delete $scope.newToggleEntry.tagArr;
+        delete $scope.newToggleEntry.estimates;
+        delete $scope.fwToggle.estimates;
+        delete $scope.newToggleEntry.desc;
+    };
+
     $scope.clearFields = function() {
-        $scope.newToggleEntry.project = {};
-        $scope.newToggleEntry.desc = "";
-        $scope.newToggleEntry.tagArr = [];
-        $scope.newToggleEntry.estimates = {};
-        $scope.fwToggle.estimates = {};
+        $scope.resetToggleEntryVar();
         $scope.showForm = false;
         $scope.$broadcast('timer-reset');
         $scope.timerRunning = false;
         $scope.addManualTimesheetFormSubmit =false;
     };
 
+    $scope.openCreateNew = function() {
+        $scope.showForm = true;
+        $scope.showFormIsOpened = true;
+        $scope.showManualFormIsOpened = false;
+        $scope.checkForAlreadyEnteredData();
+        $scope.$broadcast('addManualTimesheetFormSubmit', {addManualTimesheetFormSubmit: false});
+    };
+
     $scope.openEditTimeEntryPopup = function(uuid) {
         $scope.showManualForm = true;
+        $scope.showManualFormIsOpened = true;
+        $scope.showFormIsOpened = false;
         $scope.$broadcast('updateTimeEntry', {uuid: uuid});
     };
 
     $scope.openManualEntry = function() {
         $scope.showManualForm = true;
+        $scope.showManualFormIsOpened = true;
+        $scope.showFormIsOpened = false;
         $scope.clearFields();
         $scope.$broadcast('updateTimeSheetVariable', {newToggleEntry: $scope.newToggleEntry});
+        $scope.$broadcast('addManualTimesheetFormSubmit', {addManualTimesheetFormSubmit: false});
     };
 
-    $scope.openCreateNew = function() {
-        $scope.showForm = true;
-        if(!$scope.addDetailFormFilled) {
-            delete $scope.newToggleEntry.project;
-            $scope.newToggleEntry.desc = "";
-            $scope.newToggleEntry.tagArr = [];
-            $scope.newToggleEntry.estimates = {};
-            console.log("BEFORE", $scope.newToggleEntry)
-
+    $scope.checkForAlreadyEnteredData = function() {
+        if (!$scope.addDetailFormFilled) {
+            $scope.resetToggleEntryVar();
             $scope.$broadcast('updateTimeSheetVariable', {newToggleEntry: $scope.newToggleEntry});
-        }else {
-            console.log("AFTER", $scope.newToggleEntry)
+        } else {
             $scope.$broadcast('updateTimeSheetVariable', {newToggleEntry: $scope.newToggleEntry});
         }
-        console.log('NEW OPEN', $scope.newToggleEntry)
-
     };
 
     $scope.$on('saveNewlyCreatedTimesheetData', function (event, args) {
@@ -173,6 +177,10 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
         $scope.addDetailFormFilled = true;
     });
 
+    $scope.$on('updateTimeEntriesListing', function (event, args) {
+       $scope.timeEntries = args.timeEntries;
+    });
+
 
     /* Start Timer on click */
     $scope.startTimer = function (){
@@ -188,23 +196,22 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
 
     /* Stop Timer on click */
     $scope.stopTimer = function (addManualTimesheetForm){
+        $scope.checkForAlreadyEnteredData();
         var addTimesheetForm = addManualTimesheetForm;
-        console.log('addManualTimesheetForm', addManualTimesheetForm);
-
-        //var formIsValid = $scope.validate_fields(addTimesheetForm);
         if(addTimesheetForm.$valid) {
             $scope.newToggleEntry.end_time = new Date().getTime();
             //$scope.newToggleEntry.end_time = 1451371251000;
             $scope.newToggleEntry.end_time_format = getFormattedTime($scope.newToggleEntry.end_time);
             $scope.$broadcast('timer-stop');
             $scope.timerRunning = false;
-            $scope.addManualTimesheetFormSubmit = false;
-            $scope.clearFields();
             $scope.showForm = false;
+            $scope.clearFields();
+            $scope.$broadcast('addManualTimesheetFormSubmit', {addManualTimesheetFormSubmit: false});
         }else {
-            $scope.addManualTimesheetFormSubmit = true;
+            $scope.$broadcast('addManualTimesheetFormSubmit', {addManualTimesheetFormSubmit: true});
             $scope.showForm = true;
-            //$scope.$broadcast('ValidateFields', {uuid: '123'});
+            $scope.showFormIsOpened = true;
+            $scope.showManualFormIsOpened = false;
         }
     };
 
@@ -215,6 +222,7 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
         $scope.newToggleEntry.total_time = millisToTime(diff);
         $scope.newToggleEntry.total_time = $scope.newToggleEntry.total_time.toFixed(2);
         $scope.$broadcast('saveTimesheetOnTimerStopped', {total_time: $scope.newToggleEntry.total_time,startTime: startTime, endTime:endTime });
+
     });
 
     ipcR.on('get_timer_status', function(event, arg) {
@@ -226,11 +234,12 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
     $scope.$on('closePopup', function (event, args) {
         if($scope.showForm) {
             $scope.showForm = false;
-            $scope.addManualTimesheetFormSubmit =false;
+            $scope.addManualTimesheetFormSubmit = false;
         }
         if($scope.showManualForm) {
             $scope.showManualForm = false;
         }
+
     });
 
 
