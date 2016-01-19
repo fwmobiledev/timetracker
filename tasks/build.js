@@ -59,3 +59,11 @@ gulp.task('build', ['copy'], function () {
 gulp.task('run', function () {
     childProcess.spawn(electron, ['./app'], { stdio: 'inherit' });
 });
+
+// Rerun the task when a file changes
+gulp.task('watch', function() {
+    gulp.watch('./main/angular-app.js', ['build']);
+});
+
+// The default task (called when you run `gulp` from cli)
+gulp.task('default', ['run', 'build', 'watch']);

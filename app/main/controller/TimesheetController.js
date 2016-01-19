@@ -23,26 +23,22 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
                 $scope.timeEntries.push(timeEntry);
             });
         }).error(function (e) {
-            $scope.timeEntries = OfflineStorage.getDocs('timesheet');
-            /* Load offline Data on error */
+            $scope.timeEntries = OfflineStorage.getDocs('timesheet'); /* Load offline Data on error */
         });
     };
 
-    /* Load TimeEnteries From Offline and Sync Data to Online */
+    /* Load TimeEnteries From Offline DB and Sync Data to Online */
     var timeEntries = OfflineStorage.getDocs('timesheet', 'all');
-
     if(timeEntries.length) {
         angular.forEach(timeEntries, function(data, key) {
             if(!data.status) {
                 syncData = true;
             }
         });
-
         if(syncData) {
             $scope.syncData(timeEntries); /* Sync data to online for status 0 */
         }
     }
-
 
     /* Load timeEntries Form Online */
     if(!syncData) {
@@ -52,10 +48,9 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
             angular.forEach(data, function (timeEntry, key) {
                 timeEntry.uuid = uuid.v4();
                 timeEntry.status = 1;
-                OfflineStorage.addDoc(timeEntry, 'timesheet');
-                $scope.timeEntries.push(timeEntry);
+                OfflineStorage.addDoc(timeEntry, 'timesheet');/* Add entry */
 
-                /* Add entry */
+                $scope.timeEntries.push(timeEntry);
             });
 
         }).error(function (e) {
@@ -104,7 +99,7 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
 
     }, true);
 
-    /**========== TIMESHEET FORM STARTS ==================**/
+    /**========== CODE FOR TIMESHEET FORM STARTS ==================**/
 
     $scope.addManualTimesheetFormSubmit =false;
     var currentDate = new Date().getTime();
@@ -112,6 +107,7 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
     $scope.newToggleEntry.end_time_format = getFormattedTime(currentDate);
     $scope.timerRunning = false;
 
+    /* Reset Variable */
     $scope.resetToggleEntryVar = function() {
         delete $scope.newToggleEntry.uuid;
         delete $scope.newToggleEntry.project;
@@ -121,6 +117,7 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
         delete $scope.newToggleEntry.desc;
     };
 
+    /* Clear all fields and stop timer */
     $scope.clearFields = function() {
         $scope.resetToggleEntryVar();
         $scope.showForm = false;
@@ -133,7 +130,7 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
         $scope.showForm = true;
         $scope.showFormIsOpened = true;
         $scope.showManualFormIsOpened = false;
-        $scope.checkForAlreadyEnteredData();
+        $scope.checkForAlreadyFilledData();
         $scope.$broadcast('addManualTimesheetFormSubmit', {addManualTimesheetFormSubmit: false});
     };
 
@@ -153,7 +150,7 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
         $scope.$broadcast('addManualTimesheetFormSubmit', {addManualTimesheetFormSubmit: false});
     };
 
-    $scope.checkForAlreadyEnteredData = function() {
+    $scope.checkForAlreadyFilledData = function() {
         if (!$scope.addDetailFormFilled) {
             $scope.resetToggleEntryVar();
             $scope.$broadcast('updateTimeSheetVariable', {newToggleEntry: $scope.newToggleEntry});
@@ -172,8 +169,6 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
         }if(args.timesheet.tagArr != undefined && args.timesheet.tagArr) {
             $scope.newToggleEntry.tagArr = args.timesheet.tagArr;
         }
-        //$scope.addManualTimesheetForm = angular.copy(args.addManualTimesheetForm);
-
         $scope.addDetailFormFilled = true;
     });
 
@@ -181,6 +176,15 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
        $scope.timeEntries = args.timeEntries;
     });
 
+    $scope.$on('closePopup', function (event, args) {
+        if($scope.showForm) {
+            $scope.showForm = false;
+            $scope.addManualTimesheetFormSubmit = false;
+        }
+        if($scope.showManualForm) {
+            $scope.showManualForm = false;
+        }
+    });
 
     /* Start Timer on click */
     $scope.startTimer = function (){
@@ -196,11 +200,10 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
 
     /* Stop Timer on click */
     $scope.stopTimer = function (addManualTimesheetForm){
-        $scope.checkForAlreadyEnteredData();
+        $scope.checkForAlreadyFilledData();
         var addTimesheetForm = addManualTimesheetForm;
         if(addTimesheetForm.$valid) {
             $scope.newToggleEntry.end_time = new Date().getTime();
-            //$scope.newToggleEntry.end_time = 1451371251000;
             $scope.newToggleEntry.end_time_format = getFormattedTime($scope.newToggleEntry.end_time);
             $scope.$broadcast('timer-stop');
             $scope.timerRunning = false;
@@ -230,18 +233,6 @@ myApp.controller('timesheetCtrl', ['timesheet','OfflineStorage','$scope',  funct
             ipcR.send('start_idle_timer', $scope.timerRunning);
         }
     });
-
-    $scope.$on('closePopup', function (event, args) {
-        if($scope.showForm) {
-            $scope.showForm = false;
-            $scope.addManualTimesheetFormSubmit = false;
-        }
-        if($scope.showManualForm) {
-            $scope.showManualForm = false;
-        }
-
-    });
-
 
 }]);
 

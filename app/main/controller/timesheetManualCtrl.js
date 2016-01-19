@@ -65,7 +65,6 @@ myApp.controller('timesheetManualCtrl', ['timesheet','OfflineStorage','$scope','
 
     $scope.saveTimesheetData = function(timesheet) {
         $scope.$emit('saveNewlyCreatedTimesheetData', { timesheet: timesheet });
-
         $scope.$emit('closePopup');
     };
 
@@ -86,12 +85,16 @@ myApp.controller('timesheetManualCtrl', ['timesheet','OfflineStorage','$scope','
 
     };
 
+    $scope.populate_estimate = function(project) {
+        $scope.fwToggle.estimates = project.estimates;
+    };
+
     $scope.clearFormFields = function() {
         delete $scope.timesheet.uuid;
         delete $scope.timesheet.project;
         delete $scope.timesheet.tagArr;
         delete $scope.timesheet.estimates;
-        delete $scope.fwToggle.estimates;
+        $scope.fwToggle.estimates = {};
         delete $scope.timesheet.desc;
     };
 
@@ -99,7 +102,7 @@ myApp.controller('timesheetManualCtrl', ['timesheet','OfflineStorage','$scope','
         $scope.$emit('updateTimeEntriesListing', {timeEntries: timeEntries});
     };
 
-    /* Save timesheet on click */
+    /* Save TimeEntries on Click */
     $scope.saveManualEntry = function (addManualTimesheetForm){
         if(addManualTimesheetForm.$valid) {
             $scope.addManualTimesheetFormSubmit = false;
@@ -110,7 +113,6 @@ myApp.controller('timesheetManualCtrl', ['timesheet','OfflineStorage','$scope','
     };
 
     $scope.saveTimesheetCallback = function() {
-
         var response = {};
         response.desc = $scope.timesheet.desc;
 
@@ -123,13 +125,13 @@ myApp.controller('timesheetManualCtrl', ['timesheet','OfflineStorage','$scope','
         if($scope.timesheet.start_time != undefined) {
             response.start_time = $scope.timesheet.start_time;
         }else {
-            $scope.timesheet.start_time = new Date().getTime();
+            response.start_time = new Date().getTime();
         }
 
         if($scope.timesheet.end_time != undefined) {
             response.end_time = $scope.timesheet.end_time;
         }else {
-            response.end_time = $scope.timesheet.start_time;
+            response.end_time = response.start_time;
         }
 
         response.total_time = $scope.timesheet.total_time;
@@ -203,10 +205,9 @@ myApp.controller('timesheetManualCtrl', ['timesheet','OfflineStorage','$scope','
                 /* Send Data to server */
                 timesheet.removeTimesheet(id).success(function (data) {
                     OfflineStorage.removeTimeEntry(id).then(function () {
-                        //$scope.timeEntries = OfflineStorage.getDocs('timesheet');
+                        $scope.timeEntries = OfflineStorage.getDocs('timesheet');
                         $scope.closePopup();
-                        //$route.reload();
-                        $scope.updateTimeEntriesListing();
+                        $scope.updateTimeEntriesListing($scope.timeEntries);
                     });
                 }).error(function (data) {
                     /* Update deleted flag to 1
@@ -216,10 +217,9 @@ myApp.controller('timesheetManualCtrl', ['timesheet','OfflineStorage','$scope','
                 });
             }else {
                 OfflineStorage.updateTimesheetStatus(uuid, 'updateRemove').then(function (offlineDbData) {
-                    //$scope.timeEntries = OfflineStorage.getDocs('timesheet');
+                    $scope.timeEntries = OfflineStorage.getDocs('timesheet');
                     $scope.closePopup();
-                    $scope.updateTimeEntriesListing();
-                    //$route.reload();
+                    $scope.updateTimeEntriesListing($scope.timeEntries);
                 });
             }
         }
